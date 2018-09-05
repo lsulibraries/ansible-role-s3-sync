@@ -1,0 +1,48 @@
+- name: get pip
+  apt:
+    name: python-pip
+
+  # http://en.enisozgen.com/ansible-check-is-command-exist/
+- name: Check is aws installed
+  shell: command -v aws >/dev/null 2>&1
+  register: is_aws_exist
+  ignore_errors: yes
+
+- name: get aws cli
+  pip:
+    name: awscli
+  when: is_aws_exist.rc != 0
+
+- name: make aws config dir
+  file:
+    path: "{{ backup_agent_homedir }}/.aws"
+    state: directory
+
+- name: configure aws cli
+  template:
+    src: templates/awsconfig.j2
+    dest: "{{ backup_agent_homedir }}/.aws/config"
+
+- name: ensure the backup user exists
+  user:
+    name: "{{ backup_agent_username }}"
+    shell: /bin/bash
+
+- name: ensure user owns home
+  file:
+    path: "{{ backup_agent_homedir }}"
+    group: "{{ backup_agent_username }}"
+    owner: "{{ backup_agent_username }}"
+    mode: "0755"
+    recurse: yes
+
+- name: cron sync (with delete) to s3 # requires that ec2 instance is configured with an appropriate IAM role.
+  cron:
+    name: "s3 sync"
+    minute: "{{ s3_sync_cron.minute }}"
+    hour: "{{ s3_sync_cron.hour }}"
+    day: "{{ s3_sync_cron.day }}"
+    month: "{{ s3_sync_cron.month }}"
+    weekday: "{{ s3_sync_cron.weekday }}"
+    user: "{{ backup_agent_username }}"
+    job: "/usr/bin/aws s3 sync --delete {{ backup_location }}/ {{ s3_path }}/"
