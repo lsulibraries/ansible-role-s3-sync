@@ -1,3 +1,4 @@
+# defaults/main.yml
 aws_access_key_id: secret_id
 aws_secret_access_key: secret_key
 aws_region: us-west-2
