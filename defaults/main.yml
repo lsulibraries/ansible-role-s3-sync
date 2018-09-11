@@ -3,6 +3,7 @@ aws_access_key_id: secret_id
 aws_secret_access_key: secret_key
 aws_region: us-west-2
 
+aws_cli_location: /usr/local/bin/aws
 backup_agent_username: s3backup
 backup_agent_homedir: "/home/{{ backup_agent_username }}"
 

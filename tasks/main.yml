@@ -45,4 +45,4 @@
     month: "{{ s3_sync_cron.month }}"
     weekday: "{{ s3_sync_cron.weekday }}"
     user: "{{ backup_agent_username }}"
-    job: "/usr/bin/aws s3 sync --delete {{ backup_location }}/ {{ s3_path }}/"
+    job: "{{ aws_cli_location }} s3 sync --delete {{ backup_location }}/ {{ s3_path }}/"
