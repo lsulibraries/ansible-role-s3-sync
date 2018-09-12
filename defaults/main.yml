@@ -1,14 +1,13 @@
 # defaults/main.yml
-aws_access_key_id: secret_id
-aws_secret_access_key: secret_key
-aws_region: us-west-2
-
-aws_cli_location: /usr/local/bin/aws
-backup_agent_username: s3backup
-backup_agent_homedir: "/home/{{ backup_agent_username }}"
-
-s3_path: s3://path/to/my/bucket/backup/folder
-backup_location: /backup
+s3_sync_agent_homedir: "/root"
+s3_sync_agent_linux_username: root
+s3_sync_aws_access_key_id: secret_id
+s3_sync_aws_cli_bin_location: /usr/local/bin/aws
+s3_sync_aws_region: us-west-2
+s3_sync_aws_secret_access_key: secret_key
+s3_sync_bucket: mybucket
+s3_sync_folder: path/to/my/bucket/backup/folder/
+s3_sync_source_location: /backup
 
 s3_sync_cron:
   minute: '7'

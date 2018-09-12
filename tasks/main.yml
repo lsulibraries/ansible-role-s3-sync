@@ -15,26 +15,28 @@
 
 - name: make aws config dir
   file:
-    path: "{{ backup_agent_homedir }}/.aws"
+    path: "{{ s3_sync_agent_homedir }}/.aws"
     state: directory
 
 - name: configure aws cli
   template:
     src: templates/awsconfig.j2
-    dest: "{{ backup_agent_homedir }}/.aws/config"
+    dest: "{{ s3_sync_agent_homedir }}/.aws/config"
 
 - name: ensure the backup user exists
   user:
-    name: "{{ backup_agent_username }}"
+    name: "{{ s3_sync_agent_linux_username }}"
     shell: /bin/bash
+  when: s3_sync_agent_linux_username != 'root'
 
-- name: ensure user owns home
+- name: ensure user owns home (for ~/.aws/credentials)
   file:
-    path: "{{ backup_agent_homedir }}"
-    group: "{{ backup_agent_username }}"
-    owner: "{{ backup_agent_username }}"
+    path: "{{ s3_sync_agent_homedir }}"
+    group: "{{ s3_sync_agent_linux_username }}"
+    owner: "{{ s3_sync_agent_linux_username }}"
     mode: "0755"
     recurse: yes
+  when: s3_sync_agent_linux_username != 'root'
 
 - name: cron sync (with delete) to s3 # requires that ec2 instance is configured with an appropriate IAM role.
   cron:
@@ -44,5 +46,5 @@
     day: "{{ s3_sync_cron.day }}"
     month: "{{ s3_sync_cron.month }}"
     weekday: "{{ s3_sync_cron.weekday }}"
-    user: "{{ backup_agent_username }}"
-    job: "{{ aws_cli_location }} s3 sync --delete {{ backup_location }}/ {{ s3_path }}/"
+    user: "{{ s3_sync_agent_linux_username }}"
+    job: "{{ s3_sync_aws_cli_bin_location }} s3 sync --delete {{ s3_sync_source_location }}/ s3://{{ s3_sync_bucket }}/{{ s3_sync_folder }}"
