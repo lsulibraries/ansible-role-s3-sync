@@ -37,14 +37,3 @@
     mode: "0755"
     recurse: yes
   when: s3_sync_agent_linux_username != 'root'
-
-- name: cron sync (with delete) to s3 # requires that ec2 instance is configured with an appropriate IAM role.
-  cron:
-    name: "s3 sync"
-    minute: "{{ s3_sync_cron.minute }}"
-    hour: "{{ s3_sync_cron.hour }}"
-    day: "{{ s3_sync_cron.day }}"
-    month: "{{ s3_sync_cron.month }}"
-    weekday: "{{ s3_sync_cron.weekday }}"
-    user: "{{ s3_sync_agent_linux_username }}"
-    job: "{{ s3_sync_aws_cli_bin_location }} s3 sync --delete {{ s3_sync_source_location }}/ s3://{{ s3_sync_bucket }}/{{ s3_sync_folder }}"
